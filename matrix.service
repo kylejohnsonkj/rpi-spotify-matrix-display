@@ -2,8 +2,8 @@
 Description=rpi-spotify-matrix-display
 
 [Service]
-WorkingDirectory=/home/pi/rpi-spotify-matrix-display
-ExecStart=/home/pi/rpi-spotify-matrix-display/.venv/bin/python3 /home/pi/rpi-spotify-matrix-display/main.py
+WorkingDirectory=__WORKING_DIR__
+ExecStart=__WORKING_DIR__/.venv/bin/python3 __WORKING_DIR__/main.py
 
 [Install]
 WantedBy=default.target

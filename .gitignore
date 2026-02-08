@@ -1,9 +1,10 @@
 __pycache__
 .venv
 .vscode
-rpi-rgb-led-matrix
 .DS_Store
 lib
 bin
 .cache
 *.egg-info
+config.ini
+matrix.log

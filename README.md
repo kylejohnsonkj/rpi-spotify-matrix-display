@@ -1,16 +1,9 @@
-# Raspberry Pi Spotify Matrix Display
-
-A Spotify display for 64x64 RGB LED matrices.
-
-- **🎵 Spotify API Integration** – Show off your currently playing track
-- **🖼️ Vibrant Display** – Display album artwork alongside track details or fullscreen
-- **🚗 Scrolling Text** – Auto-scrolling text for long track titles and artist names
-- **⏯️ Playback Indicators** – Play/pause indicator and track progression bar
-- **🖥️ Emulator Support** – Try it out before building your own display!
-
-<br>
-
-![emulator screenshot](images/screenshot.png)
+<div align="center">
+  <img src="images/demo.gif" width="256" alt="Demo">
+  <h1>rpi-spotify-matrix-display</h1>
+  <p>A Spotify display for 64x64 RGB LED matrices.<br>Run on a Raspberry Pi connected to a matrix, or just play around using the emulator!</p>
+  <a href="https://www.buymeacoffee.com/kylejohnsonkj"><img src="https://raw.githubusercontent.com/pachadotdev/buymeacoffee-badges/main/bmc-yellow.svg" alt="BuyMeACoffee"></a>
+</div>
 
 ## 🔑 Spotify Setup
 1. Go to the [Spotify Developer Dashboard](https://developer.spotify.com/dashboard)
@@ -21,39 +14,77 @@ A Spotify display for 64x64 RGB LED matrices.
 ## 📦 Installation
 
 ```bash
-git clone --recurse-submodules https://github.com/kylejohnsonkj/rpi-spotify-matrix-display
+git clone https://github.com/kylejohnsonkj/rpi-spotify-matrix-display
 
 cd rpi-spotify-matrix-display
 
-make
+make          # The Makefile does it all for you!
 ```
 
 ## ▶ Running the Display
 
 ```bash
-make run      # Raspberry Pi + matrix display
-make emulate  # Emulator window (no hardware required)
+make emulate  # Run in emulator (macOS, Windows, etc. - no external hardware required)
+make run      # Run on a pi connected to an LED matrix display
 
 make help     # List available commands
 ```
 
-After running, follow instructions provided in the console. Pasted link should begin with http://127.0.0.1:8080/callback. After successful authorization, play a song and the display will appear!
-
-### macOS
-![macos.png](images/macos.png)
-
-### Windows
-![windows.png](images/windows.png)
-
-## 🛠 Configuration
-
-You can configure Matrix and Spotify settings in `config.ini`. For example, you can change your [hardware mapping](https://github.com/hzeller/rpi-rgb-led-matrix#changing-parameters-via-command-line-flags) (may be required), opt for fullscreen artwork, or set up a device whitelist.
+After starting the display, follow the instructions in the console. The pasted link should begin with http://127.0.0.1:8080/callback. After successful authorization, play a song and the display will appear! ✅
 
 ---
 
-### Building Your Own Display
+## 🎵 Lyrics Support
 
-Don't have a Raspberry Pi or RGB matrix yet? No worries! Feel free to mess around with emulation and come back to this section once you're ready.
+The display supports two methods of displaying lyrics. You can choose your preference by setting `dedicated_lyrics` to true or false in the configuration file.
+
+| Standard Lyrics (default) | Dedicated Lyrics |
+| --- | --- |
+| <img src="images/standard.gif" width="256"> | <img src="images/dedicated.gif" width="256"> |
+
+## 🧩 Configuration
+
+You can configure the display using the `config.ini`. Use it to update your [hardware mapping](https://github.com/hzeller/rpi-rgb-led-matrix#changing-parameters-via-command-line-flags) (may be required), opt for fullscreen artwork, adjust timings, or permit only certain playback devices to activate the display.
+
+## 💬 FAQ
+
+<details>
+<summary><b>Can I use this with a matrix other than 64x64?</b></summary>
+
+Only 64x64 matrices are supported at this time. If you'd like to extend this project to support other matrix sizes, feel free to fork this project!
+</details>
+
+<details>
+<summary><b>I'm not seeing the right album artwork.</b></summary>
+
+Spotify is likely set to video playback mode and is sending a still from the video. Switch back to audio playback in your Spotify app.
+</details>
+
+<details>
+<summary><b>Where do I get my `sp_dc` for lyrics?</b></summary>
+
+[See this guide](https://github.com/akashrchandran/syrics/wiki/Finding-sp_dc) to find your sp_dc cookie. Skip this step if you do not want to show lyrics.
+</details>
+
+<details>
+<summary><b>Why are lyrics sometimes delayed or out of sync?</b></summary>
+
+When playing to a Spotify Connect destination, lyrics may start out delayed due to the API not accounting for how long the destination took to connect. This is automatically resolved after about 30s of listening, when the API figures out what happened. You can see the same behavior with Spotify's own lyrics screen as well. Additionally, some songs are synced better than others.
+</details>
+
+<details>
+<summary><b>Why does the API get called every second?</b></summary>
+
+Spotify's API does not provide public websocket support, so the only way to determine playback status and track progression is by polling the API regularly. You can increase this polling interval in `config.ini` if you want to reduce the number of calls.
+
+Note that using the `device_whitelist` requires an additional request every 5 seconds to check for active devices. This is disabled by default.
+</details>
+
+---
+
+## 🛠️ Building Your Own Display
+
+Don't have a Raspberry Pi or LED matrix yet? No worries! Play around with the emulator and come back to this section once you're ready.
 
 **Parts List**
 
@@ -68,7 +99,7 @@ I also 3d printed a [matrix stand](https://www.thingiverse.com/thing:3781875) an
 Once you have all the parts, proceed with the Rasperry Pi Setup below!
 
 <details>
-<summary><b>Raspberry Pi Setup</b> (click to expand)</summary>
+<summary><b>⚙️ Raspberry Pi Setup</b></summary>
 
 #### Step 1: Install Pi OS
 - [Download and open the Raspberry Pi Imager](https://www.raspberrypi.com/software/)
@@ -86,22 +117,19 @@ Once you have all the parts, proceed with the Rasperry Pi Setup below!
 - This puts you in the `/home/pi` directory
 - You can use `pwd` to confirm where you are throughout this process
 
-#### Step 3: Update packages and install git
-- `sudo apt update` (get current list of packages)
-- `sudo apt upgrade` (upgrade out of date packages)
+#### Step 3: Install git
 - `sudo apt install git`
 
-#### Step 4: Jump back to the [Installation](#-installation) instructions above!
-
-#### Step 5: Optimize performance (optional)
-- You can run `make rpi-optimize` to try to improve the performance of your display. This will [reserve a CPU core for the display](https://github.com/hzeller/rpi-rgb-led-matrix?tab=readme-ov-file#cpu-use) and [disable onboard audio](https://github.com/hzeller/rpi-rgb-led-matrix?tab=readme-ov-file#troubleshooting).
-</details>
+#### Step 4: Follow the [Installation](#-installation) guide
+- Soon you'll be seeing something like this!
 
 https://github.com/user-attachments/assets/9bf163f9-8e0f-47cc-b2d2-a62b3a975471
 
+</details>
+
 ---
 
-### Acknowledgements
-- allenslab for creating the original [matrix-dashboard](https://www.reddit.com/r/3Dprinting/comments/ujyy4g/i_designed_and_3d_printed_a_led_matrix_dashboard/) code and [inspiration](https://www.reddit.com/r/3Dprinting/comments/ujyy4g/i_designed_and_3d_printed_a_led_matrix_dashboard/)
-- typorter for his [RGBMatrixEmulator](https://github.com/ty-porter/RGBMatrixEmulator) project (a lifesaver!)
-- hzeller for the great [rpi-rgb-led-matrix](https://github.com/hzeller/rpi-rgb-led-matrix) library
+## :heart: Acknowledgements
+- **allenslab** for inspiring this project with the original [matrix-dashboard](https://www.reddit.com/r/3Dprinting/comments/ujyy4g/i_designed_and_3d_printed_a_led_matrix_dashboard/)
+- **typorter** for his continued work on [RGBMatrixEmulator](https://github.com/ty-porter/RGBMatrixEmulator)
+- **hzeller** for the [rpi-rgb-led-matrix](https://github.com/hzeller/rpi-rgb-led-matrix) library

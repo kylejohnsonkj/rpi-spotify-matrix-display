@@ -4,6 +4,7 @@
     "pixel_style": "square",
     "pixel_glow": 6,
     "display_adapter": "pygame",
+    "allow_adapter_fallback": false,
     "icon_path": null,
     "emulator_title": null,
     "suppress_font_warnings": false,
@@ -16,7 +17,8 @@
         "quality": 70,
         "image_border": true,
         "debug_text": false,
-        "image_format": "JPEG"
+        "image_format": "JPEG",
+        "open_immediately": false
     },
     "pi5": {
         "_comment": "For use with the pi5 adapter only.",

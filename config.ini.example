@@ -1,0 +1,20 @@
+[Matrix]
+hardware_mapping = adafruit-hat-pwm
+brightness = 50
+gpio_slowdown = 2
+
+[Player]
+target_fps = 60
+dedicated_lyrics = false
+text_scroll_speed = 15
+text_scroll_delay = 4
+always_fullscreen = false
+fullscreen_delay = 10
+shutdown_delay = 30
+
+[Spotify]
+client_id = <YOUR_CLIENT_ID_HERE>
+client_secret = <YOUR_CLIENT_SECRET_HERE>
+sp_dc = <YOUR SP_DC COOKIE FOR LYRICS>
+fetch_interval = 1
+; device_whitelist = ['Marantz AVR', 'Samsung TV']

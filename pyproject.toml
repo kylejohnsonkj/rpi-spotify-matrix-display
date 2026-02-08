@@ -7,18 +7,21 @@ name = "rpi-spotify-matrix-display"
 version = "2.0.0"
 description = "Raspberry Pi Spotify Matrix Display"
 readme = "README.md"
-license = {text = "GPL-3.0-or-later"}
+license = "GPL-3.0-or-later"
 authors = [
     { name = "Kyle Johnson", email = "kyjohnson09@gmail.com" },
 ]
-requires-python = ">=3.8"
+requires-python = ">=3.10"
 dependencies = [
-    "Pillow<12",
-    "urllib3<2",
+    "Pillow",
     "numpy",
     "requests",
     "spotipy",
     "RGBMatrixEmulator",
+    "pygame",
+    "librelyrics",
+    "librelyrics-spotify",
+    "rgbmatrix @ git+https://github.com/hzeller/rpi-rgb-led-matrix.git ; sys_platform == 'linux' and platform_machine != 'x86_64'",
 ]
 
 [project.urls]
@@ -27,6 +30,9 @@ Homepage = "https://github.com/kylejohnsonkj/rpi-spotify-matrix-display"
 [project.scripts]
 spotify-matrix = "main:main"
 
+[tool.setuptools]
+py-modules = ["main"]
+
 [tool.setuptools.packages.find]
 where = ["."]
-include = ["*.py"]
+include = ["views*", "player*", "services*", "utils*"]
