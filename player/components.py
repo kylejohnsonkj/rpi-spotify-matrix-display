@@ -45,6 +45,11 @@ class ArtCache:
                     sz = min(width, height)
                     l, t = (width - sz) // 2, (height - sz) // 2
                     img = img.crop((l, t, l + sz, t + sz))
+                
+                # Pre-scale to max matrix size in the background thread!
+                # This prevents the main thread from doing a heavy 640x640 resize.
+                img.thumbnail((64, 64), getattr(Image, 'Resampling', Image).LANCZOS)
+                
                 color = get_accent_color(img)
                 self._cache[url] = {'orig': img, 'color': color}
                 
