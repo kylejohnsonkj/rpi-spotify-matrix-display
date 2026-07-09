@@ -14,9 +14,10 @@ PROGRESS_BG_COLOR = (100, 100, 100)
 
 class ArtCache:
     """Manages fetching, resizing, and caching of album artwork and dominant colors."""
-    def __init__(self):
+    def __init__(self, skip_color_calc=False):
         self._cache = {}
         self._fetching_url = None
+        self.skip_color_calc = skip_color_calc
 
     def get(self, url, size=None):
         data = self._cache.get(url)
@@ -45,7 +46,10 @@ class ArtCache:
                     sz = min(width, height)
                     l, t = (width - sz) // 2, (height - sz) // 2
                     img = img.crop((l, t, l + sz, t + sz))
-                color = get_accent_color(img)
+                if not self.skip_color_calc:
+                    color = get_accent_color(img)
+                else:
+                    color = SPOTIFY_BRAND_GREEN
                 self._cache[url] = {'orig': img, 'color': color}
                 
                 for k in list(self._cache.keys()):

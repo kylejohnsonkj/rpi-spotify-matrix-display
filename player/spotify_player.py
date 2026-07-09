@@ -44,7 +44,8 @@ class SpotifyPlayer:
             self.font = ImageFont.load_default()
 
         self.black_screen = Image.new("RGB", (W, H), (0, 0, 0))
-        self.art_cache = ArtCache()
+        always_fullscreen = config.getboolean('Player', 'always_fullscreen', fallback=False)
+        self.art_cache = ArtCache(skip_color_calc=always_fullscreen)
         self.player_transition = PlayerTransition(self.target_fps)
         self.playback = PlaybackController(spotify_module, self.art_cache)
         
