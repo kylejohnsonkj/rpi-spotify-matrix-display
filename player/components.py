@@ -50,8 +50,11 @@ class ArtCache:
                 # This prevents the main thread from doing a heavy 640x640 resize.
                 img.thumbnail((64, 64), getattr(Image, 'Resampling', Image).LANCZOS)
                 
+                # Pre-generate the 48x48 size used by the standard view so the main thread does ZERO resizing!
+                img_48 = img.resize((48, 48), getattr(Image, 'Resampling', Image).LANCZOS)
+                
                 color = get_accent_color(img)
-                self._cache[url] = {'orig': img, 'color': color}
+                self._cache[url] = {'orig': img, 'color': color, 48: img_48, 64: img}
                 
                 for k in list(self._cache.keys()):
                     if k not in safe_urls and k != url and len(self._cache) > 4:

@@ -47,6 +47,7 @@ class PlayerTransition:
                 self.history.pop(0)
 
     def generate_frame(self, target_frame, dt: float):
+        self.frames += dt * self.target_fps
         progress = min(1.0, self.frames / self.total_frames)
         eased_progress = 1 - (1 - progress) ** 2
         o_l = round(W * eased_progress)
@@ -63,7 +64,6 @@ class PlayerTransition:
             pb_new = target_frame.crop((0, 62, W, H))
             comp.paste(pb_new, (0, 62))
 
-        self.frames += dt * self.target_fps
         if self.frames >= self.total_frames:
             self.active = False
             
