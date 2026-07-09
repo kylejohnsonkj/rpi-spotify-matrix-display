@@ -12,7 +12,7 @@ def get_accent_color(img: Image.Image) -> tuple[int, int, int]:
     """
     img = img.convert("RGB")
     # Downscale for performance and to smooth out noisy pixels
-    img.thumbnail((192, 192), Image.Resampling.LANCZOS)
+    img.thumbnail((64, 64), Image.Resampling.LANCZOS)
     
     colors_info = img.getcolors(img.width * img.height)
     if not colors_info:
