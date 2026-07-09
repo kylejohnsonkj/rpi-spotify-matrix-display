@@ -29,12 +29,12 @@ class PlayerTransition:
         self.snapshot = None
         self.history = []
 
-    def start(self, new_track_id, current_track_id, snapshot):
+    def start(self, new_track_id, current_track_id, snapshot, slide_progress_bar=False):
         self.active = True
         self.frames = 0
         self.direction = 1
         self.snapshot = snapshot.copy() if snapshot else None
-        self.slide_progress_bar = (current_track_id is None)
+        self.slide_progress_bar = slide_progress_bar or (current_track_id is None)
         
         if new_track_id in self.history and current_track_id in self.history:
             if self.history.index(new_track_id) < self.history.index(current_track_id):

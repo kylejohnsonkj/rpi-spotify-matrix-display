@@ -77,13 +77,14 @@ class SpotifyPlayer:
     def _handle_track_change(self, current_track_id: str, now: float):
         """Detects if the track has changed and triggers transition animations."""
         if current_track_id and current_track_id != self.last_track_id:
+            always_fullscreen = self.config.getboolean('Player', 'always_fullscreen', fallback=False)
             if self.last_response and self.last_track_id:
                 draw = ImageDraw.Draw(self.last_generated_frame)
                 color = self.art_cache.get_color(self.last_response.art_url) if getattr(self.last_response, 'art_url', None) else SPOTIFY_BRAND_GREEN
-                if self.lyrics_t < 0.5:
+                if self.lyrics_t < 0.5 and not always_fullscreen:
                     self.view.play_indicator.draw(draw, "Paused", color=color)
             
-            self.player_transition.start(current_track_id, self.last_track_id, self.last_generated_frame)
+            self.player_transition.start(current_track_id, self.last_track_id, self.last_generated_frame, slide_progress_bar=always_fullscreen)
             self.player_transition.update_history(current_track_id)
             self.view.title.end_scroll(now)
             self.view.artist.end_scroll(now)
@@ -117,7 +118,12 @@ class SpotifyPlayer:
             view_name = "fullscreen"
             if self.fullscreen_start_time == 0: self.fullscreen_start_time = now
             self.lyrics_t = 0.0
-            t = min(1.0, (now - self.fullscreen_start_time) / 0.5)
+            
+            if always_fullscreen:
+                t = 1.0
+            else:
+                t = min(1.0, (now - self.fullscreen_start_time) / 0.5)
+                
             std = generate_standard_view(response, progress_ms, duration_ms, True, self.view, show_lyrics, time_paused, time_playing, time_since_lyrics_fetched)
             frame = generate_fullscreen_view(response, self.view, t, std)
         else:

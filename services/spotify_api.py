@@ -150,7 +150,8 @@ class SpotifyModule:
             self.track_start_time = time.time()
             self.lyrics_fetcher.last_track_id = None
             
-        allow_fetch = track.get('is_playing', False) and (time.time() - self.track_start_time) >= LYRIC_FETCH_DELAY_SEC
+        always_fullscreen = self.config.getboolean('Player', 'always_fullscreen', fallback=False)
+        allow_fetch = track.get('is_playing', False) and (time.time() - self.track_start_time) >= LYRIC_FETCH_DELAY_SEC and not always_fullscreen
         
         return PlaybackInfo(
             artist=artist_text,
