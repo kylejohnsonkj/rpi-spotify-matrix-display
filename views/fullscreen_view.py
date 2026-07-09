@@ -18,6 +18,9 @@ def generate_fullscreen_view(response, components, fullscreen_t: float = 1.0, st
     if getattr(response, 'art_url', None) and w > 0 and h > 0:
         art = components.album_art.cache.get(response.art_url, W)
         if art:
-            img.paste(art.resize((w, h), Image.LANCZOS), (x, y))
+            if w == art.width and h == art.height:
+                img.paste(art, (x, y))
+            else:
+                img.paste(art.resize((w, h), getattr(Image, 'Resampling', Image).BILINEAR), (x, y))
 
     return img

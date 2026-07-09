@@ -37,6 +37,9 @@ def get_active_lines(lyrics_data):
     if not lyrics_data or not lyrics_data.get('lyrics') or lyrics_data['lyrics'].get('syncType') != 'LINE_SYNCED':
         return []
         
+    if '_cached_active_lines' in lyrics_data:
+        return lyrics_data['_cached_active_lines']
+        
     lines = lyrics_data['lyrics'].get('lines', [])
     active_lines = []
     
@@ -57,6 +60,7 @@ def get_active_lines(lyrics_data):
         if line['end_ms'] == 0:
             line['end_ms'] = next_start
             
+    lyrics_data['_cached_active_lines'] = active_lines
     return active_lines
 
 _last_printed_lyric = None
