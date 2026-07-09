@@ -20,11 +20,16 @@ def get_accent_color(img: Image.Image) -> tuple[int, int, int]:
         
     total_pixels = img.width * img.height
     
+    import time
+    
     # 1. Smart Grouping
     # Group similar pixels. Instead of averaging (which creates muddy colors),
     # we keep the single most vibrant pixel from each group as its representative.
     groups = {}
-    for count, (r, g, b) in colors_info:
+    for i, (count, (r, g, b)) in enumerate(colors_info):
+        if i % 100 == 0:
+            time.sleep(0.001) # Explicitly yield the GIL to the main rendering thread
+            
         h, s, v = colorsys.rgb_to_hsv(r / 255.0, g / 255.0, b / 255.0)
         
         # Group by 64s in RGB space (~64 possible buckets)
@@ -57,7 +62,10 @@ def get_accent_color(img: Image.Image) -> tuple[int, int, int]:
     
     scored_colors = []
     
-    for data in groups.values():
+    for i, data in enumerate(groups.values()):
+        if i % 100 == 0:
+            time.sleep(0.001) # Explicitly yield the GIL to the main rendering thread
+            
         r, g, b = data['color']
         h, s, v = data['hsv']
         percentage = data['count'] / total_pixels
