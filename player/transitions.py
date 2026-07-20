@@ -3,7 +3,9 @@ import time
 from PIL import Image
 
 W, H = 64, 64
+BASELINE_FPS = 60
 SLIDE_FRAMES = 80
+SLIDE_DURATION_SEC = SLIDE_FRAMES / BASELINE_FPS
 
 class ScaleTransition:
     @staticmethod
@@ -20,18 +22,16 @@ class SlideTransition:
         element.y = int(start_y + (end_y - start_y) * progress)
 
 class PlayerTransition:
-    def __init__(self, target_fps: int):
+    def __init__(self):
         self.active = False
-        self.frames = 0
-        self.total_frames = SLIDE_FRAMES
-        self.target_fps = target_fps
+        self.elapsed_sec = 0.0
         self.direction = 1
         self.snapshot = None
         self.history = []
 
     def start(self, new_track_id, current_track_id, snapshot, slide_progress_bar=False):
         self.active = True
-        self.frames = 0
+        self.elapsed_sec = 0.0
         self.direction = 1
         self.snapshot = snapshot.copy() if snapshot else None
         self.slide_progress_bar = slide_progress_bar or (current_track_id is None)
@@ -47,8 +47,8 @@ class PlayerTransition:
                 self.history.pop(0)
 
     def generate_frame(self, target_frame, dt: float):
-        self.frames += dt * self.target_fps
-        progress = min(1.0, self.frames / self.total_frames)
+        self.elapsed_sec += dt
+        progress = min(1.0, self.elapsed_sec / SLIDE_DURATION_SEC)
         eased_progress = 1 - (1 - progress) ** 2
         o_l = round(W * eased_progress)
         
@@ -64,7 +64,7 @@ class PlayerTransition:
             pb_new = target_frame.crop((0, 62, W, H))
             comp.paste(pb_new, (0, 62))
 
-        if self.frames >= self.total_frames:
+        if self.elapsed_sec >= SLIDE_DURATION_SEC:
             self.active = False
             
         return comp

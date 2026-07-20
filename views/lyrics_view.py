@@ -8,14 +8,13 @@ W, H = 64, 64
 ART_X, ART_Y, ART_W, ART_H = 8, 14, 48, 48
 LYRICS_FADE_MS = 300
 
-def generate_lyrics_view(response, progress_ms, duration_ms, show_play, components, lyrics_frames, max_lyrics_frames, has_lyrics_now, lyric_transition_time_sec, time_paused=0.0, time_playing=0.0):
+def generate_lyrics_view(response, progress_ms, duration_ms, show_play, components, transition_elapsed_sec, transition_duration_sec, has_lyrics_now, time_paused=0.0, time_playing=0.0):
     """ Generates the dedicated lyrics view with a scrolling text and synced lyric lines. """
     img = Image.new("RGB", (W, H), (0, 0, 0))
     draw = ImageDraw.Draw(img)
 
-    t_total = lyrics_frames / max_lyrics_frames
-    art_end = int(max_lyrics_frames * 16 / 28)
-    art_t = min(1.0, lyrics_frames / art_end) if art_end > 0 else 1.0
+    t_total = min(1.0, transition_elapsed_sec / transition_duration_sec) if transition_duration_sec > 0 else 1.0
+    art_t = min(1.0, t_total / (16 / 28))
 
     _transition_scrolling_text(components, art_t)
     ScaleTransition.apply(components.album_art, ART_X, ART_Y, ART_W, ART_H, 1, 1, 15, 15, art_t)
@@ -25,13 +24,13 @@ def generate_lyrics_view(response, progress_ms, duration_ms, show_play, componen
     components.title.draw(draw)
     components.artist.draw(draw)
     
-    _draw_progress_bar(draw, components, progress_ms, duration_ms, art_t, t_total, lyrics_frames, max_lyrics_frames, color)
+    _draw_progress_bar(draw, components, progress_ms, duration_ms, art_t, t_total, color)
     _draw_backgrounds(draw, components, art_t, t_total)
     
     components.album_art.draw(img, response.art_url)
 
-    if lyrics_frames > 0:
-        _draw_lyrics_text(img, response.lyrics, progress_ms, 18, lyrics_frames, components.title.font, max_lyrics_frames, lyric_transition_time_sec, time_paused, time_playing)
+    if transition_elapsed_sec > 0:
+        _draw_lyrics_text(img, response.lyrics, progress_ms, 18, components.title.font, transition_elapsed_sec, transition_duration_sec, time_paused, time_playing)
 
     if not response.is_playing:
         state = "Paused"
@@ -69,7 +68,7 @@ def _draw_backgrounds(draw, components, art_t, t_total):
     if art_t > 0.5: draw.rectangle((0, 0, text_x - 1, 16), fill=(0, 0, 0))
     draw.rectangle((W - 1, 0, W - 1, 16), fill=(0, 0, 0))
 
-def _draw_progress_bar(draw, components, progress_ms, duration_ms, art_t, t_total, lyrics_frames, max_lyrics_frames, color):
+def _draw_progress_bar(draw, components, progress_ms, duration_ms, art_t, t_total, color):
     """ Draws and animates the progress bar matching the layout. """
     text_x = components.title.x
     btn_x = int(56 + (W + 3 - 56) * (1.0 - t_total))
@@ -82,11 +81,10 @@ def _draw_progress_bar(draw, components, progress_ms, duration_ms, art_t, t_tota
             components.progress_bar.draw(draw, progress_ms, duration_ms, fill_color=color)
 
     bar_width = W - text_x - 1 if t_total > 0 else text_width
-    bar_start = int(max_lyrics_frames * 16 / 28.0)
-    bar_end = int(max_lyrics_frames)
-    
-    if lyrics_frames > bar_start:
-        grow_t = min(1.0, (lyrics_frames - bar_start) / max(1, bar_end - bar_start))
+    bar_start_t = 16 / 28
+
+    if t_total > bar_start_t:
+        grow_t = min(1.0, (t_total - bar_start_t) / (1.0 - bar_start_t))
         current_bar_width = int(bar_width * grow_t)
         if current_bar_width > 0:
             draw.rectangle((text_x, 14, text_x + current_bar_width - 1, 15), fill=(100, 100, 100))
@@ -98,16 +96,16 @@ def _draw_progress_bar(draw, components, progress_ms, duration_ms, art_t, t_tota
         components.progress_bar.width, components.progress_bar.height = bar_width, 2
         components.progress_bar.draw(draw, progress_ms, duration_ms, fill_color=color)
 
-def _draw_lyrics_text(img, lyrics, progress_ms, y_offset, lyrics_frames, font, max_lyrics_frames, lyric_transition_time_sec, time_paused=0.0, time_playing=0.0):
+def _draw_lyrics_text(img, lyrics, progress_ms, y_offset, font, transition_elapsed_sec, transition_duration_sec, time_paused=0.0, time_playing=0.0):
     """ Draws the synchronized lyrics text lines. """
     active_lines = get_active_lines(lyrics)
     if not active_lines:
         return
     lyrics_img = Image.new("RGBA", (W, H), (0, 0, 0, 0))
     draw = ImageDraw.Draw(lyrics_img)
-    lyrics_text_start = int(max_lyrics_frames * 16 / 28)
-    
-    ms_since_appear = max(0.0, (lyric_transition_time_sec * 1000.0) - (lyrics_text_start * (1000.0 / 60.0)))
+    lyrics_text_start_sec = transition_duration_sec * 16 / 28
+
+    ms_since_appear = max(0.0, (transition_elapsed_sec - lyrics_text_start_sec) * 1000.0)
     
     target_ms = progress_ms
     text, current_line_start_ms, current_line_end_ms, next_line_start_ms = get_active_lyric(active_lines, target_ms, keepalive=True)

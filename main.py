@@ -97,7 +97,7 @@ def main():
         
         matrix = setup_matrix(config, args.emulate)
         
-        target_fps = config.getint('Matrix', 'target_fps', fallback=60)
+        target_fps = config.getint('Player', 'target_fps', fallback=60)
         target_frame_time = 1.0 / target_fps
         
         next_frame_time = time.perf_counter()

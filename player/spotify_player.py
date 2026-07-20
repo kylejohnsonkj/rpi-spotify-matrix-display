@@ -31,7 +31,6 @@ class SpotifyPlayer:
         self.spotify_module = spotify_module
         self.config = config
         
-        self.target_fps = config.getint('Player', 'target_fps', fallback=60)
         self.fetch_interval = config.getint('Spotify', 'fetch_interval', fallback=1)
         self.fullscreen_delay = config.getfloat('Player', 'fullscreen_delay', fallback=10.0)
         self.shutdown_delay = config.getfloat('Player', 'shutdown_delay', fallback=30.0)
@@ -45,7 +44,7 @@ class SpotifyPlayer:
 
         self.black_screen = Image.new("RGB", (W, H), (0, 0, 0))
         self.art_cache = ArtCache()
-        self.player_transition = PlayerTransition(self.target_fps)
+        self.player_transition = PlayerTransition()
         self.playback = PlaybackController(spotify_module, self.art_cache)
         
         self.view = PlayerView(
@@ -132,8 +131,7 @@ class SpotifyPlayer:
             view_name = "lyrics" if is_dedicated_lyrics else "standard"
                 
             if self.lyrics_t > 0.0:
-                frames = self.lyrics_t * 60
-                frame = generate_lyrics_view(response, progress_ms, duration_ms, True, self.view, frames, 60, is_dedicated_lyrics, self.lyrics_t, time_paused, time_playing)
+                frame = generate_lyrics_view(response, progress_ms, duration_ms, True, self.view, self.lyrics_t, 1.0, is_dedicated_lyrics, time_paused, time_playing)
             else:
                 frame = generate_standard_view(response, progress_ms, duration_ms, True, self.view, show_lyrics, time_paused, time_playing, time_since_lyrics_fetched)
                 
