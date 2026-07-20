@@ -76,8 +76,6 @@ When playing to a Spotify Connect destination, lyrics may start out delayed due 
 <summary><b>Why does the API get called every second?</b></summary>
 
 Spotify's API does not provide public websocket support, so the only way to determine playback status and track progression is by polling the API regularly. You can increase this polling interval in `config.ini` if you want to reduce the number of calls.
-
-Note that using the `device_whitelist` requires an additional request every 5 seconds to check for active devices. This is disabled by default.
 </details>
 
 ---
@@ -132,5 +130,6 @@ https://github.com/user-attachments/assets/9bf163f9-8e0f-47cc-b2d2-a62b3a975471
 ## :heart: Acknowledgements
 - **allenslab** for inspiring this project with the original [matrix-dashboard](https://www.reddit.com/r/3Dprinting/comments/ujyy4g/i_designed_and_3d_printed_a_led_matrix_dashboard/)
 - **typorter** for his continued work on [RGBMatrixEmulator](https://github.com/ty-porter/RGBMatrixEmulator)
+- **spotipy contributors** for the Spotify Web API [python wrapper](https://github.com/spotipy-dev/spotipy)
 - **akashrchandran** for [LibreLyrics](https://github.com/libre-lyrics/librelyrics) (and specifically the Spotify [plugin](https://github.com/libre-lyrics/librelyrics-spotify))
 - **hzeller** for the essential [rpi-rgb-led-matrix](https://github.com/hzeller/rpi-rgb-led-matrix) library
