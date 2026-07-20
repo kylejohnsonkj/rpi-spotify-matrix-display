@@ -132,4 +132,5 @@ https://github.com/user-attachments/assets/9bf163f9-8e0f-47cc-b2d2-a62b3a975471
 ## :heart: Acknowledgements
 - **allenslab** for inspiring this project with the original [matrix-dashboard](https://www.reddit.com/r/3Dprinting/comments/ujyy4g/i_designed_and_3d_printed_a_led_matrix_dashboard/)
 - **typorter** for his continued work on [RGBMatrixEmulator](https://github.com/ty-porter/RGBMatrixEmulator)
-- **hzeller** for the [rpi-rgb-led-matrix](https://github.com/hzeller/rpi-rgb-led-matrix) library
+- **akashrchandran** for [LibreLyrics](https://github.com/libre-lyrics/librelyrics) (and specifically the Spotify [plugin](https://github.com/libre-lyrics/librelyrics-spotify))
+- **hzeller** for the essential [rpi-rgb-led-matrix](https://github.com/hzeller/rpi-rgb-led-matrix) library
